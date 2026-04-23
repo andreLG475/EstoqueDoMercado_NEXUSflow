@@ -184,12 +184,10 @@ No painel Supabase, vá para **SQL Editor** e execute o arquivo `scripts/001_cre
 Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
 
 ```env
-# Supabase - Obtenha em: https://supabase.com/dashboard
-NEXT_PUBLIC_SUPABASE_URL=https://seu-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-anonima-aqui
+NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=https://v0.app/chat/api/supabase/redirect/f5zS1U0mcWx
+NEXT_PUBLIC_SUPABASE_URL=https://ehyqfrvmjdwldnwviqif.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoeXFmcnZtamR3bGRud3ZpcWlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NjkwNDMsImV4cCI6MjA5MjI0NTA0M30.LuMJsw-JV4264mFjNm519hSQSMBZ-IlXmZkLpB2dgwo
 
-# Desenvolvimento (Opcional)
-NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=http://localhost:3000
 ```
 
 ### Como Obter as Chaves Supabase?
