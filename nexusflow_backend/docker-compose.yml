@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: nexusflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nexusflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: nexusflow
+    ports:
+      - "5434:5432"
+    volumes:
+      - nexusflow_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexusflow -d nexusflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  nexusflow_pgdata:
