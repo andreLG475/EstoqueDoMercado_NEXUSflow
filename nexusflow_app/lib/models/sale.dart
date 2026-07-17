@@ -33,6 +33,7 @@ class Sale {
     required this.createdAt,
     required this.items,
     required this.itemCount,
+    this.customerCpf,
   });
 
   factory Sale.fromJson(Map<String, dynamic> json) => Sale(
@@ -48,6 +49,7 @@ class Sale {
                 .toList() ??
             const [],
         itemCount: json['item_count'] as int? ?? (json['sale_items'] as List<dynamic>?)?.length ?? 0,
+        customerCpf: json['customer_cpf'] as String?,
       );
 
   final String id;
@@ -59,6 +61,7 @@ class Sale {
   final DateTime createdAt;
   final List<SaleItem> items;
   final int itemCount;
+  final String? customerCpf;
 }
 
 const paymentMethodLabels = {

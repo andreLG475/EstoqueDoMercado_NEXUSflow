@@ -13,7 +13,7 @@ enum Role {
   }
 
   static const Map<Role, List<String>> routes = {
-    Role.gerenteGeral: ['/', '/estoque', '/pdv', '/relatorios', '/historico', '/usuarios/novo'],
+    Role.gerenteGeral: ['/', '/estoque', '/pdv', '/relatorios', '/historico', '/usuarios', '/usuarios/novo'],
     Role.gerenteEstoque: ['/', '/estoque'],
     Role.atendente: ['/pdv'],
   };

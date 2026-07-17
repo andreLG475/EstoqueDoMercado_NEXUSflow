@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:nexusflow_backend/src/auth/guards.dart';
+import 'package:nexusflow_backend/src/cpf.dart';
 import 'package:nexusflow_backend/src/db.dart';
 import 'package:nexusflow_backend/src/models/role.dart';
 import 'package:nexusflow_backend/src/models/sale.dart';
@@ -81,11 +82,16 @@ Future<Response> _create(RequestContext context, String userId) async {
     );
   }
 
+  final customerCpf = normalizeCpf(body['customer_cpf'] as String?);
+  if (customerCpf != null && !isValidCpf(customerCpf)) {
+    return Response.json(statusCode: 400, body: {'error': 'CPF inválido'});
+  }
+
   try {
     final result = await db.execute(
       Sql.named('''
         SELECT create_sale(
-          @userId::uuid, @paymentMethod, @amountPaid, @items::jsonb
+          @userId::uuid, @paymentMethod, @amountPaid, @items::jsonb, @customerCpf
         ) AS result
       '''),
       parameters: {
@@ -93,6 +99,7 @@ Future<Response> _create(RequestContext context, String userId) async {
         'paymentMethod': paymentMethod,
         'amountPaid': amountPaid,
         'items': jsonEncode(items),
+        'customerCpf': customerCpf,
       },
     );
 

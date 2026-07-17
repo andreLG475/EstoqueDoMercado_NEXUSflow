@@ -35,7 +35,7 @@ const _allNavItems = [
   _NavItem('/pdv', 'PDV - Caixa', Icons.point_of_sale_outlined),
   _NavItem('/relatorios', 'Relatórios', Icons.bar_chart_outlined),
   _NavItem('/historico', 'Histórico', Icons.history),
-  _NavItem('/usuarios/novo', 'Usuários', Icons.person_add_outlined),
+  _NavItem('/usuarios', 'Usuários', Icons.people_outline),
 ];
 
 class AppShell extends ConsumerWidget {
@@ -50,7 +50,10 @@ class AppShell extends ConsumerWidget {
 
     final items = _allNavItems.where((item) => profile.role.canAccess(item.path)).toList();
     final location = GoRouterState.of(context).matchedLocation;
-    final selectedIndex = items.indexWhere((item) => item.path == location).clamp(0, items.length - 1);
+    final matchIndex = items.indexWhere(
+      (item) => location == item.path || location.startsWith('${item.path}/'),
+    );
+    final selectedIndex = (matchIndex < 0 ? 0 : matchIndex).clamp(0, items.length - 1);
 
     final isWide = MediaQuery.sizeOf(context).width >= 720;
 

@@ -35,57 +35,74 @@ class AppBrand {
 
 const _seedColor = AppBrand.purple;
 
-ThemeData buildLightTheme() => ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(seedColor: _seedColor).copyWith(
-        tertiary: AppBrand.red,
-        surface: Colors.white,
-        // Material 3 tinta superfícies (AppBar, Card, NavigationRail...) com
-        // o "surface tint" na cor primária por padrão, o que lava tudo de
-        // lilás. Zerando isso, essas superfícies ficam brancas de verdade,
-        // com o roxo aparecendo só nos elementos de destaque (botões, ícones
-        // selecionados), igual à logo.
-        surfaceTint: Colors.transparent,
-      ),
-      scaffoldBackgroundColor: Colors.white,
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: AppBrand.purple,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-      ),
-      navigationRailTheme: const NavigationRailThemeData(
-        backgroundColor: Colors.white,
-      ),
-      navigationBarTheme: const NavigationBarThemeData(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-      ),
-      cardTheme: const CardThemeData(
-        color: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        margin: EdgeInsets.zero,
-      ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
-      ),
-    );
+ThemeData buildLightTheme() {
+  final colorScheme = ColorScheme.fromSeed(seedColor: _seedColor).copyWith(
+    tertiary: AppBrand.red,
+    surface: Colors.white,
+    // Material 3 tinta superfícies (AppBar, Card, NavigationRail...) com
+    // o "surface tint" na cor primária por padrão, o que lava tudo de
+    // lilás. Zerando isso, essas superfícies ficam brancas de verdade,
+    // com o roxo aparecendo só nos elementos de destaque (botões, ícones
+    // selecionados), igual à logo.
+    surfaceTint: Colors.transparent,
+  );
 
-ThemeData buildDarkTheme() => ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: _seedColor,
-        brightness: Brightness.dark,
-      ).copyWith(
-        tertiary: AppBrand.red,
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: colorScheme,
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: AppBrand.purple,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+    ),
+    navigationRailTheme: const NavigationRailThemeData(
+      backgroundColor: Colors.white,
+    ),
+    navigationBarTheme: const NavigationBarThemeData(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+    ),
+    cardTheme: CardThemeData(
+      color: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      // Sem elevação/sombra, o card branco se confundia com o fundo branco
+      // (e o equivalente no tema escuro). A borda garante que dá pra ver
+      // onde o card começa e termina nos dois temas.
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
-      cardTheme: const CardThemeData(
-        elevation: 0,
-        margin: EdgeInsets.zero,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: OutlineInputBorder(),
+    ),
+  );
+}
+
+ThemeData buildDarkTheme() {
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: _seedColor,
+    brightness: Brightness.dark,
+  ).copyWith(tertiary: AppBrand.red);
+
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: colorScheme,
+    cardTheme: CardThemeData(
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
-      ),
-    );
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: OutlineInputBorder(),
+    ),
+  );
+}

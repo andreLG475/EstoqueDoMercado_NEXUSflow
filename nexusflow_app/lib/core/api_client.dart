@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 import 'api_config.dart';
@@ -22,6 +25,7 @@ abstract class ApiClient {
   Future<dynamic> post(String path, {Object? body});
   Future<dynamic> put(String path, {Object? body});
   Future<dynamic> delete(String path);
+  Future<Uint8List> getBytes(String path);
 }
 
 class DioApiClient implements ApiClient {
@@ -68,6 +72,29 @@ class DioApiClient implements ApiClient {
 
   @override
   Future<dynamic> delete(String path) => _request(() => _dio.delete(path));
+
+  @override
+  Future<Uint8List> getBytes(String path) async {
+    try {
+      final response = await _dio.get<List<int>>(path, options: Options(responseType: ResponseType.bytes));
+      return Uint8List.fromList(response.data ?? const []);
+    } on DioException catch (e) {
+      throw ApiException(_errorMessage(e.response?.data), statusCode: e.response?.statusCode);
+    }
+  }
+
+  String _errorMessage(Object? data) {
+    if (data is Map && data['error'] != null) return data['error'] as String;
+    if (data is List<int>) {
+      try {
+        final decoded = jsonDecode(utf8.decode(data));
+        if (decoded is Map && decoded['error'] != null) return decoded['error'] as String;
+      } catch (_) {
+        // corpo não é JSON (ex.: PDF) — usa a mensagem genérica abaixo.
+      }
+    }
+    return 'Erro de conexão com o servidor';
+  }
 
   Future<dynamic> _request(Future<Response<dynamic>> Function() call) async {
     try {

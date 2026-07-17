@@ -41,6 +41,7 @@ class Sale {
     required this.changeAmount,
     required this.invoiceNumber,
     required this.createdAt,
+    this.customerCpf,
     this.items = const [],
   });
 
@@ -52,6 +53,7 @@ class Sale {
         changeAmount: parseNum(row['change_amount']),
         invoiceNumber: row['invoice_number'] as int?,
         createdAt: row['created_at'] as DateTime,
+        customerCpf: row['customer_cpf'] as String?,
       );
 
   final String id;
@@ -61,6 +63,7 @@ class Sale {
   final double changeAmount;
   final int? invoiceNumber;
   final DateTime createdAt;
+  final String? customerCpf;
   final List<SaleItem> items;
 
   Sale withItems(List<SaleItem> items) => Sale(
@@ -71,6 +74,7 @@ class Sale {
         changeAmount: changeAmount,
         invoiceNumber: invoiceNumber,
         createdAt: createdAt,
+        customerCpf: customerCpf,
         items: items,
       );
 
@@ -82,6 +86,7 @@ class Sale {
         'change_amount': changeAmount,
         'invoice_number': invoiceNumber,
         'created_at': createdAt.toIso8601String(),
+        'customer_cpf': customerCpf,
         'sale_items': items.map((item) => item.toJson()).toList(),
       };
 }

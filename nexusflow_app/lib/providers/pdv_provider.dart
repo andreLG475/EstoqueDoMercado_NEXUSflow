@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/api_client.dart';
@@ -69,14 +71,21 @@ final cartTotalProvider = Provider<double>((ref) {
 });
 
 class SaleResult {
-  SaleResult({required this.invoiceNumber, required this.total, required this.changeAmount});
+  SaleResult({
+    required this.saleId,
+    required this.invoiceNumber,
+    required this.total,
+    required this.changeAmount,
+  });
 
   factory SaleResult.fromJson(Map<String, dynamic> json) => SaleResult(
+        saleId: json['sale_id'] as String,
         invoiceNumber: json['invoice_number'] as int?,
         total: (json['total'] as num).toDouble(),
         changeAmount: (json['change_amount'] as num).toDouble(),
       );
 
+  final String saleId;
   final int? invoiceNumber;
   final double total;
   final double changeAmount;
@@ -86,7 +95,11 @@ class CheckoutController {
   CheckoutController(this._ref);
   final Ref _ref;
 
-  Future<SaleResult> checkout({required String paymentMethod, required double amountPaid}) async {
+  Future<SaleResult> checkout({
+    required String paymentMethod,
+    required double amountPaid,
+    String? customerCpf,
+  }) async {
     final api = _ref.read(apiClientProvider);
     final cart = _ref.read(cartProvider);
 
@@ -95,6 +108,7 @@ class CheckoutController {
       body: {
         'payment_method': paymentMethod,
         'amount_paid': amountPaid,
+        'customer_cpf': customerCpf,
         'items': [
           for (final item in cart) {'product_id': item.productId, 'quantity': item.quantity},
         ],
@@ -106,6 +120,11 @@ class CheckoutController {
     _ref.invalidate(dashboardProvider);
 
     return SaleResult.fromJson(data);
+  }
+
+  Future<Uint8List> downloadInvoicePdf(String saleId) {
+    final api = _ref.read(apiClientProvider);
+    return api.getBytes('/api/vendas/$saleId/nota-fiscal');
   }
 }
 

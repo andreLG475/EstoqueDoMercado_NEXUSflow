@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -153,6 +155,9 @@ class FakeApiClient implements ApiClient {
 
   @override
   Future<dynamic> delete(String path) async => {'message': 'ok'};
+
+  @override
+  Future<Uint8List> getBytes(String path) async => Uint8List(0);
 }
 
 void main() {

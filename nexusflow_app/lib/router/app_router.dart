@@ -12,6 +12,7 @@ import '../screens/pdv/pdv_screen.dart';
 import '../screens/relatorios/relatorios_screen.dart';
 import '../screens/shell/app_shell.dart';
 import '../screens/usuarios/novo_usuario_screen.dart';
+import '../screens/usuarios/usuarios_screen.dart';
 import 'router_refresh.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -63,6 +64,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/pdv', builder: (context, state) => const PdvScreen()),
           GoRoute(path: '/relatorios', builder: (context, state) => const RelatoriosScreen()),
           GoRoute(path: '/historico', builder: (context, state) => const HistoricoScreen()),
+          GoRoute(path: '/usuarios', builder: (context, state) => const UsuariosScreen()),
           GoRoute(path: '/usuarios/novo', builder: (context, state) => const NovoUsuarioScreen()),
         ],
       ),
