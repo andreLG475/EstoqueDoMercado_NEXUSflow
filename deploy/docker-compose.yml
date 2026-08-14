@@ -1,36 +1,34 @@
 services:
-  # ── Banco de Dados ──────────────────────────────────────────
+  # ── Banco de Dados (inicializa tabelas automaticamente) ─────
   db:
     image: postgres:16-alpine
     container_name: nexusflow-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: nexusflow
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: nexusflow123
       POSTGRES_DB: nexusflow
     ports:
       - "5434:5432"
     volumes:
       - nexusflow_pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nexusflow -d nexusflow"]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  # ── Backend (Dart Frog) ─────────────────────────────────────
+  # ── Backend (puxa imagem pronta do Docker Hub) ──────────────
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: ${DOCKERHUB_USER:-nexusflow}/nexusflow-backend:latest
+    image: victorff2008/nexusflow-backend:latest
     container_name: nexusflow-backend
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
-      DATABASE_URL: postgresql://nexusflow:${POSTGRES_PASSWORD}@db:5432/nexusflow?sslmode=disable
-      SESSION_SECRET: ${SESSION_SECRET}
+      DATABASE_URL: postgresql://nexusflow:nexusflow123@db:5432/nexusflow?sslmode=disable
+      SESSION_SECRET: nexusflow-secret-key-2024
     depends_on:
       db:
         condition: service_healthy

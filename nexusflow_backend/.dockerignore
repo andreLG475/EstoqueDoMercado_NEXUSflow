@@ -1,0 +1,9 @@
+.dart_tool/
+.dart_frog/
+build/
+coverage/
+.env
+.packages
+.git/
+.vscode/
+*.log
