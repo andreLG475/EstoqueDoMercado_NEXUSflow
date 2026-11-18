@@ -25,8 +25,6 @@ String _formatCpf(String digits) =>
     '${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6, 9)}-${digits.substring(9, 11)}';
 
 Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
-  final isFiscalAuthorized = sale.invoiceNumber != null;
-
   final doc = pw.Document()
     ..addPage(
       pw.Page(
@@ -43,9 +41,7 @@ Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
               ),
             ),
             pw.Text(
-              isFiscalAuthorized
-                  ? 'Nota Fiscal de Venda'
-                  : 'Comprovante de Venda',
+              'Comprovante de Venda',
               style: const pw.TextStyle(fontSize: 12),
             ),
             pw.SizedBox(height: 16),

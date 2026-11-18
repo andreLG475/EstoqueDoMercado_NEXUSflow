@@ -15,8 +15,8 @@ Sistema de gerenciamento de estoque e PDV (Ponto de Venda) desenvolvido com **Fl
 1. **Crie o arquivo `.env`** nesta pasta com as variáveis de ambiente:
 
 ```env
-POSTGRES_PASSWORD=sua-senha
-SESSION_SECRET=uma-string-aleatoria-bem-longa
+POSTGRES_PASSWORD=altere-esta-senha
+SESSION_SECRET=gere-uma-string-aleatoria-bem-longa
 ```
 
 2. **Abra o terminal** nesta pasta (`deploy/`)

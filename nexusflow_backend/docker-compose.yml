@@ -12,6 +12,7 @@ services:
       - "5434:5432"
     volumes:
       - nexusflow_pgdata:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nexusflow -d nexusflow"]
       interval: 5s

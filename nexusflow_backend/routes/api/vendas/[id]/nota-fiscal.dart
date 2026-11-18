@@ -55,9 +55,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
     cashierName: cashierName,
   );
 
-  final attachmentName = sale.invoiceNumber != null
-      ? 'nota-fiscal-${sale.invoiceNumber}'
-      : 'comprovante-venda-${sale.id}';
+  final attachmentName = 'comprovante-venda-${sale.id}';
 
   return Response.bytes(
     body: bytes,

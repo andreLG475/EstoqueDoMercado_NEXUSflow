@@ -46,13 +46,15 @@ dart_frog dev
 
 API disponível em `http://localhost:8080`.
 
-Crie o primeiro usuário:
+Crie primeiro um atendente pelo cadastro público:
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"name":"Admin","email":"admin@nexusflow.com","password":"senha123","role":"gerente_geral"}'
+  -d '{"name":"Atendente","email":"atendente@nexusflow.com","password":"senha123","role":"atendente"}'
 ```
+
+Contas administrativas (`gerente_geral` e `gerente_estoque`) só podem ser criadas por um Gerente Geral autenticado na rota `POST /api/usuarios`.
 
 ## 3. Frontend (App Flutter)
 
