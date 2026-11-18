@@ -25,11 +25,17 @@ Future<Response> onRequest(RequestContext context, String id) async {
       parameters: {'id': id},
     );
   } on ServerException {
-    return Response.json(statusCode: 404, body: {'error': 'Venda não encontrada'});
+    return Response.json(
+      statusCode: 404,
+      body: {'error': 'Venda não encontrada'},
+    );
   }
 
   if (saleResult.isEmpty) {
-    return Response.json(statusCode: 404, body: {'error': 'Venda não encontrada'});
+    return Response.json(
+      statusCode: 404,
+      body: {'error': 'Venda não encontrada'},
+    );
   }
 
   final row = saleResult.first.toColumnMap();
@@ -40,16 +46,24 @@ Future<Response> onRequest(RequestContext context, String id) async {
     Sql.named('SELECT * FROM sale_items WHERE sale_id = @saleId'),
     parameters: {'saleId': sale.id},
   );
-  final items = itemsResult.map((r) => SaleItem.fromRow(r.toColumnMap())).toList();
+  final items = itemsResult
+      .map((r) => SaleItem.fromRow(r.toColumnMap()))
+      .toList();
 
-  final bytes = await buildInvoicePdf(sale.withItems(items), cashierName: cashierName);
+  final bytes = await buildInvoicePdf(
+    sale.withItems(items),
+    cashierName: cashierName,
+  );
+
+  final attachmentName = sale.invoiceNumber != null
+      ? 'nota-fiscal-${sale.invoiceNumber}'
+      : 'comprovante-venda-${sale.id}';
 
   return Response.bytes(
     body: bytes,
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition':
-          'attachment; filename="nota-fiscal-${sale.invoiceNumber ?? sale.id}.pdf"',
+      'Content-Disposition': 'attachment; filename="$attachmentName.pdf"',
     },
   );
 }

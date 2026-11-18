@@ -4,9 +4,11 @@ services:
     image: postgres:16-alpine
     container_name: nexusflow-postgres
     restart: unless-stopped
+    env_file:
+      - ./.env
     environment:
       POSTGRES_USER: nexusflow
-      POSTGRES_PASSWORD: nexusflow123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: nexusflow
     ports:
       - "5434:5432"
@@ -26,9 +28,11 @@ services:
     restart: unless-stopped
     ports:
       - "8080:8080"
+    env_file:
+      - ./.env
     environment:
-      DATABASE_URL: postgresql://nexusflow:nexusflow123@db:5432/nexusflow?sslmode=disable
-      SESSION_SECRET: nexusflow-secret-key-2024
+      DATABASE_URL: postgresql://nexusflow:${POSTGRES_PASSWORD}@db:5432/nexusflow?sslmode=disable
+      SESSION_SECRET: ${SESSION_SECRET}
     depends_on:
       db:
         condition: service_healthy

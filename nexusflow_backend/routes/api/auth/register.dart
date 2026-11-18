@@ -17,7 +17,10 @@ Future<Response> onRequest(RequestContext context) async {
   final requestedRole = body?['role'] as String?;
 
   if (name == null || name.isEmpty) {
-    return Response.json(statusCode: 400, body: {'error': 'Nome é obrigatório'});
+    return Response.json(
+      statusCode: 400,
+      body: {'error': 'Nome é obrigatório'},
+    );
   }
   if (email == null || !email.contains('@')) {
     return Response.json(statusCode: 400, body: {'error': 'E-mail inválido'});
@@ -29,16 +32,20 @@ Future<Response> onRequest(RequestContext context) async {
     );
   }
 
-  // Decisão do dono do sistema: o cadastro público permite escolher
-  // qualquer papel (inclusive Gerente Geral), sem exigir um admin
-  // autenticado. Só faz sentido porque o app não fica exposto a
-  // desconhecidos — quem chega na tela de cadastro é sempre alguém de
-  // confiança da própria loja.
   Role role;
   try {
-    role = requestedRole != null ? Role.fromString(requestedRole) : Role.atendente;
+    role = requestedRole != null
+        ? Role.fromString(requestedRole)
+        : Role.atendente;
+    role = validatePublicRegistrationRole(role);
   } catch (_) {
-    return Response.json(statusCode: 400, body: {'error': 'Papel inválido'});
+    return Response.json(
+      statusCode: 400,
+      body: {
+        'error':
+            'Cadastro público só permite o papel atendente. Para perfis administrativos, use a criação autorizada pela gestão.',
+      },
+    );
   }
 
   final existing = await db.execute(
@@ -46,7 +53,10 @@ Future<Response> onRequest(RequestContext context) async {
     parameters: {'email': email},
   );
   if (existing.isNotEmpty) {
-    return Response.json(statusCode: 409, body: {'error': 'E-mail já cadastrado'});
+    return Response.json(
+      statusCode: 409,
+      body: {'error': 'E-mail já cadastrado'},
+    );
   }
 
   final passwordHash = hashPassword(password);

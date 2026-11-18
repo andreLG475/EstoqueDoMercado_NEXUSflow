@@ -119,7 +119,7 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
             ),
             if (_result!.invoiceNumber != null) ...[
               const SizedBox(height: 4),
-              Text('Nota fiscal nº ${_result!.invoiceNumber}'),
+              Text('Comprovante nº ${_result!.invoiceNumber}'),
             ],
             if (change > 0) ...[
               const SizedBox(height: 16),
@@ -158,7 +158,7 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
             OutlinedButton.icon(
               onPressed: _showInvoicePreview,
               icon: const Icon(Icons.visibility_outlined),
-              label: const Text('Pré-visualizar Nota Fiscal'),
+              label: const Text('Pré-visualizar Comprovante'),
             ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(),

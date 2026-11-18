@@ -64,7 +64,7 @@ class _InvoicePreviewDialogState extends ConsumerState<_InvoicePreviewDialog> {
       _bytes = bytes;
       await Printing.sharePdf(
         bytes: bytes,
-        filename: 'nota-fiscal-${widget.invoiceNumber}.pdf',
+        filename: 'comprovante-venda-${widget.invoiceNumber}.pdf',
       );
     } on ApiException catch (e) {
       setState(() => _error = e.message);
@@ -88,7 +88,7 @@ class _InvoicePreviewDialogState extends ConsumerState<_InvoicePreviewDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Pré-visualização · Nota Fiscal nº ${widget.invoiceNumber}',
+                      'Pré-visualização · Comprovante nº ${widget.invoiceNumber}',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -146,7 +146,7 @@ class _InvoicePreviewDialogState extends ConsumerState<_InvoicePreviewDialog> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.download_outlined),
-                    label: const Text('Baixar Nota Fiscal'),
+                    label: const Text('Baixar Comprovante'),
                   ),
                 ],
               ),

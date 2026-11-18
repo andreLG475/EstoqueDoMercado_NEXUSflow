@@ -44,10 +44,12 @@ Os scripts estão em `scripts/` e devem ser executados **nesta ordem**:
 
 1. `001_create_tables.sql` — cria `products`, `sales`, `sale_items`.
 2. `002_auth_roles_invoices.sql` — cria `profiles` (usuários/papéis), numeração de nota fiscal e a função `create_sale`.
+3. `003_customer_cpf.sql` — atualiza a função `create_sale` para aceitar CPF opcional do cliente e manter a validação do estoque consistente.
 
 ```bash
 docker compose exec -T db psql -U nexusflow -d nexusflow < scripts/001_create_tables.sql
 docker compose exec -T db psql -U nexusflow -d nexusflow < scripts/002_auth_roles_invoices.sql
+docker compose exec -T db psql -U nexusflow -d nexusflow < scripts/003_customer_cpf.sql
 ```
 
 No Windows, se o redirecionamento `<` não funcionar no seu terminal (ex.: PowerShell), use:
@@ -83,12 +85,21 @@ A API sobe por padrão em `http://localhost:8080`.
 
 ### 2.4 Criar o primeiro usuário
 
-Não há seed automático — crie o primeiro usuário chamando a rota de cadastro:
+O cadastro público fica restrito ao papel `atendente`. Para criar gerentes ou administradores, use um procedimento autorizado por um perfil de Gerente Geral, como a rota autenticada `POST /api/usuarios`.
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"name":"Admin","email":"admin@nexusflow.com","password":"senha123","role":"gerente_geral"}'
+  -d '{"name":"Atendente","email":"atendente@nexusflow.com","password":"senha123","role":"atendente"}'
+```
+
+Depois, um gerente geral autenticado pode criar um usuário administrativo pela API:
+
+```bash
+curl -X POST http://localhost:8080/api/usuarios \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <TOKEN_DO_GERENTE>" \
+  -d '{"name":"Gerente","email":"gerente@nexusflow.com","password":"senha123","role":"gerente_geral"}'
 ```
 
 Papéis disponíveis: `gerente_geral`, `gerente_estoque`, `atendente`.

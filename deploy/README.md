@@ -12,18 +12,25 @@ Sistema de gerenciamento de estoque e PDV (Ponto de Venda) desenvolvido com **Fl
 
 ### Passo a passo
 
-1. **Abra o terminal** nesta pasta (`deploy/`)
+1. **Crie o arquivo `.env`** nesta pasta com as variáveis de ambiente:
 
-2. **Execute o comando:**
+```env
+POSTGRES_PASSWORD=sua-senha
+SESSION_SECRET=uma-string-aleatoria-bem-longa
+```
+
+2. **Abra o terminal** nesta pasta (`deploy/`)
+
+3. **Execute o comando:**
 
 ```bash
 docker compose up
 ```
 
-3. **Pronto!** O sistema vai:
-   - Baixar a imagem do backend do Docker Hub
+4. **Pronto!** O sistema vai:
+   - Ler a senha do banco e a chave de sessão pelo arquivo `.env`
    - Criar o banco de dados PostgreSQL
-   - Criar todas as tabelas automaticamente
+   - Executar `init.sql` para criar todas as tabelas, perfil de usuários e rotina de vendas
    - Iniciar o servidor na porta **8080**
 
 4. **Acesse o backend:** [http://localhost:8080](http://localhost:8080)

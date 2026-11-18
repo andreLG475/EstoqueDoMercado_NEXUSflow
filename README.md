@@ -19,11 +19,12 @@ cp .env.example .env    # edite e defina uma senha em POSTGRES_PASSWORD/DATABASE
 docker compose up -d
 ```
 
-Rode as migrações (uma vez só):
+Rode as migrações (uma vez só) na ordem correta:
 
 ```bash
 docker compose exec -T db psql -U nexusflow -d nexusflow < scripts/001_create_tables.sql
 docker compose exec -T db psql -U nexusflow -d nexusflow < scripts/002_auth_roles_invoices.sql
+docker compose exec -T db psql -U nexusflow -d nexusflow < scripts/003_customer_cpf.sql
 ```
 
 No PowerShell, troque o `<` por:
@@ -31,6 +32,7 @@ No PowerShell, troque o `<` por:
 ```powershell
 Get-Content scripts/001_create_tables.sql | docker compose exec -T db psql -U nexusflow -d nexusflow
 Get-Content scripts/002_auth_roles_invoices.sql | docker compose exec -T db psql -U nexusflow -d nexusflow
+Get-Content scripts/003_customer_cpf.sql | docker compose exec -T db psql -U nexusflow -d nexusflow
 ```
 
 ## 2. Backend (API)

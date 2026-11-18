@@ -12,7 +12,8 @@ const _paymentMethodLabels = {
   'pix': 'PIX',
 };
 
-String _currency(double value) => 'R\$ ${value.toStringAsFixed(2).replaceAll('.', ',')}';
+String _currency(double value) =>
+    'R\$ ${value.toStringAsFixed(2).replaceAll('.', ',')}';
 
 String _dateTime(DateTime value) {
   final local = value.toLocal();
@@ -24,6 +25,8 @@ String _formatCpf(String digits) =>
     '${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6, 9)}-${digits.substring(9, 11)}';
 
 Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
+  final isFiscalAuthorized = sale.invoiceNumber != null;
+
   final doc = pw.Document()
     ..addPage(
       pw.Page(
@@ -32,13 +35,27 @@ Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Text('NEXUSflow Mercado', style: const pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
-            pw.Text('Nota Fiscal de Venda', style: const pw.TextStyle(fontSize: 12)),
+            pw.Text(
+              'NEXUSflow Mercado',
+              style: const pw.TextStyle(
+                fontSize: 20,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+            pw.Text(
+              isFiscalAuthorized
+                  ? 'Nota Fiscal de Venda'
+                  : 'Comprovante de Venda',
+              style: const pw.TextStyle(fontSize: 12),
+            ),
             pw.SizedBox(height: 16),
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
-                pw.Text('Nº ${sale.invoiceNumber ?? '-'}', style: const pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                pw.Text(
+                  'Nº ${sale.invoiceNumber ?? '-'}',
+                  style: const pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
                 pw.Text(_dateTime(sale.createdAt)),
               ],
             ),
@@ -77,10 +94,15 @@ Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
                 children: [
                   pw.Text(
                     'Total: ${_currency(sale.total)}',
-                    style: const pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                    style: const pw.TextStyle(
+                      fontSize: 14,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
                   ),
                   pw.SizedBox(height: 4),
-                  pw.Text('Forma de pagamento: ${_paymentMethodLabels[sale.paymentMethod] ?? sale.paymentMethod}'),
+                  pw.Text(
+                    'Forma de pagamento: ${_paymentMethodLabels[sale.paymentMethod] ?? sale.paymentMethod}',
+                  ),
                   if (sale.paymentMethod == 'dinheiro') ...[
                     pw.Text('Valor pago: ${_currency(sale.amountPaid)}'),
                     pw.Text('Troco: ${_currency(sale.changeAmount)}'),

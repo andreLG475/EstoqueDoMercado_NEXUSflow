@@ -25,6 +25,7 @@ AS $$
 DECLARE
   v_role TEXT;
   v_item JSONB;
+  v_item_summary RECORD;
   v_product RECORD;
   v_qty INTEGER;
   v_total NUMERIC(10,2) := 0;
@@ -47,27 +48,32 @@ BEGIN
     RAISE EXCEPTION 'Forma de pagamento inválida';
   END IF;
 
-  -- Calcula o total com preços do banco e valida estoque (com lock)
-  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items) LOOP
-    v_qty := (v_item ->> 'quantity')::INTEGER;
-    IF v_qty IS NULL OR v_qty <= 0 THEN
-      RAISE EXCEPTION 'Quantidade inválida';
-    END IF;
-
+  -- Calcula o total com preços do banco e valida estoque somando as
+  -- quantidades por produto antes de confirmar a venda.
+  FOR v_item_summary IN
+    WITH item_totals AS (
+      SELECT
+        (item ->> 'product_id')::UUID AS product_id,
+        SUM((item ->> 'quantity')::INTEGER) AS total_quantity
+      FROM jsonb_array_elements(p_items) AS item
+      GROUP BY (item ->> 'product_id')::UUID
+    )
+    SELECT product_id, total_quantity FROM item_totals
+  LOOP
     SELECT id, name, sale_price, stock_quantity INTO v_product
     FROM products
-    WHERE id = (v_item ->> 'product_id')::UUID
+    WHERE id = v_item_summary.product_id
     FOR UPDATE;
 
     IF NOT FOUND THEN
-      RAISE EXCEPTION 'Produto não encontrado: %', v_item ->> 'product_id';
+      RAISE EXCEPTION 'Produto não encontrado: %', v_item_summary.product_id;
     END IF;
 
-    IF v_product.stock_quantity < v_qty THEN
+    IF v_product.stock_quantity < v_item_summary.total_quantity THEN
       RAISE EXCEPTION 'Estoque insuficiente para o produto %', v_product.name;
     END IF;
 
-    v_total := v_total + (v_product.sale_price * v_qty);
+    v_total := v_total + (v_product.sale_price * v_item_summary.total_quantity);
   END LOOP;
 
   -- Pagamento

@@ -17,18 +17,27 @@ class HistoricoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bucketsAsync = ref.watch(historicoProvider);
     final groupBy = ref.watch(historicoGroupByProvider);
-    final colors =
-        Theme.of(context).brightness == Brightness.dark ? AppSemanticColors.dark : AppSemanticColors.light;
+    final colors = Theme.of(context).brightness == Brightness.dark
+        ? AppSemanticColors.dark
+        : AppSemanticColors.light;
 
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Histórico de Vendas',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-          Text('Faturamento agrupado por período',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          Text(
+            'Histórico de Vendas',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Faturamento agrupado por período',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: 16),
           SegmentedButton<String>(
             segments: [
@@ -37,7 +46,8 @@ class HistoricoScreen extends ConsumerWidget {
             ],
             selected: {groupBy},
             onSelectionChanged: (selection) =>
-                ref.read(historicoGroupByProvider.notifier).state = selection.first,
+                ref.read(historicoGroupByProvider.notifier).state =
+                    selection.first,
           ),
           const SizedBox(height: 16),
           Expanded(
@@ -46,7 +56,9 @@ class HistoricoScreen extends ConsumerWidget {
               error: (error, _) => Center(child: Text(error.toString())),
               data: (buckets) {
                 if (buckets.isEmpty) {
-                  return const Center(child: Text('Nenhuma venda registrada ainda'));
+                  return const Center(
+                    child: Text('Nenhuma venda registrada ainda'),
+                  );
                 }
                 return RefreshIndicator(
                   onRefresh: () => ref.refresh(historicoProvider.future),
@@ -56,14 +68,20 @@ class HistoricoScreen extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final bucket = buckets[index];
                       return ListTile(
-                        title: Text(_bucketLabel(bucket.bucket, groupBy),
-                            style: const TextStyle(fontWeight: FontWeight.w600)),
+                        title: Text(
+                          _bucketLabel(bucket.bucket, groupBy),
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                         subtitle: Text('${bucket.totalSales} vendas'),
                         trailing: Text(
                           formatCurrency(bucket.totalRevenue),
-                          style: TextStyle(fontWeight: FontWeight.bold, color: colors.success),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: colors.success,
+                          ),
                         ),
-                        onTap: () => _showBucketDetail(context, ref, bucket, groupBy),
+                        onTap: () =>
+                            _showBucketDetail(context, ref, bucket, groupBy),
                       );
                     },
                   ),
@@ -116,17 +134,23 @@ class _BucketDetailSheetState extends ConsumerState<_BucketDetailSheet> {
 
   Future<List<Sale>> _fetchSales() async {
     final api = ref.read(apiClientProvider);
-    final data = await api.get('/api/vendas', query: {
-      'from': widget.bucket.bucket.toIso8601String(),
-      'to': widget.bucket.bucketEnd(widget.groupBy).toIso8601String(),
-    }) as List<dynamic>;
+    final data =
+        await api.get(
+              '/api/vendas',
+              query: {
+                'from': widget.bucket.bucket.toIso8601String(),
+                'to': widget.bucket.bucketEnd(widget.groupBy).toIso8601String(),
+              },
+            )
+            as List<dynamic>;
     return data.map((e) => Sale.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).brightness == Brightness.dark ? AppSemanticColors.dark : AppSemanticColors.light;
+    final colors = Theme.of(context).brightness == Brightness.dark
+        ? AppSemanticColors.dark
+        : AppSemanticColors.light;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -137,8 +161,12 @@ class _BucketDetailSheetState extends ConsumerState<_BucketDetailSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_bucketLabel(widget.bucket.bucket, widget.groupBy),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              _bucketLabel(widget.bucket.bucket, widget.groupBy),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             Expanded(
               child: FutureBuilder<List<Sale>>(
@@ -152,7 +180,9 @@ class _BucketDetailSheetState extends ConsumerState<_BucketDetailSheet> {
                   }
                   final sales = snapshot.data!;
                   if (sales.isEmpty) {
-                    return const Center(child: Text('Nenhuma venda neste período'));
+                    return const Center(
+                      child: Text('Nenhuma venda neste período'),
+                    );
                   }
                   return ListView.separated(
                     controller: scrollController,
@@ -161,16 +191,21 @@ class _BucketDetailSheetState extends ConsumerState<_BucketDetailSheet> {
                     itemBuilder: (context, index) {
                       final sale = sales[index];
                       return ListTile(
-                        title: Text(sale.invoiceNumber != null
-                            ? 'Nota fiscal nº ${sale.invoiceNumber}'
-                            : 'Venda #${sale.id.substring(0, 8)}'),
+                        title: Text(
+                          sale.invoiceNumber != null
+                              ? 'Comprovante nº ${sale.invoiceNumber}'
+                              : 'Venda #${sale.id.substring(0, 8)}',
+                        ),
                         subtitle: Text(
                           '${formatDateTime(sale.createdAt)} · ${sale.itemCount} itens · '
                           '${paymentMethodLabels[sale.paymentMethod] ?? sale.paymentMethod}',
                         ),
                         trailing: Text(
                           formatCurrency(sale.total),
-                          style: TextStyle(fontWeight: FontWeight.bold, color: colors.success),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: colors.success,
+                          ),
                         ),
                       );
                     },

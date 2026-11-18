@@ -28,3 +28,39 @@ enum Role {
     Role.atendente: '/pdv',
   };
 }
+
+Role validatePublicRegistrationRole(Role role) {
+  if (role == Role.atendente) {
+    return role;
+  }
+
+  throw ArgumentError(
+    'Cadastro público só permite o papel atendente. Para perfis administrativos, use o procedimento autorizado pela gestão.',
+  );
+}
+
+Map<String, int> summarizeRequestedQuantities(
+  List<Map<String, dynamic>> items,
+) {
+  final totals = <String, int>{};
+
+  for (final item in items) {
+    final productId = (item['product_id'] ?? '').toString();
+    final quantity = int.tryParse(item['quantity']?.toString() ?? '') ?? 0;
+
+    if (productId.isEmpty || quantity <= 0) {
+      continue;
+    }
+
+    totals[productId] = (totals[productId] ?? 0) + quantity;
+  }
+
+  return totals;
+}
+
+bool validateRequestedStock(
+  int availableStock,
+  Map<String, int> requestedTotals,
+) {
+  return requestedTotals.values.every((quantity) => quantity <= availableStock);
+}
