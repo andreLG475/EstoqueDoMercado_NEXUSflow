@@ -24,6 +24,10 @@ String _dateTime(DateTime value) {
 String _formatCpf(String digits) =>
     '${digits.substring(0, 3)}.${digits.substring(3, 6)}.${digits.substring(6, 9)}-${digits.substring(9, 11)}';
 
+/// REQUISITO 4: Geração de comprovantes de venda
+/// NOTA: O termo "invoice" neste contexto refere-se a "comprovante de venda",
+/// NÃO a uma nota fiscal com validade legal. Estes PDFs são apenas para
+/// controle interno e não possuem validade fiscal conforme legislação brasileira.
 Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
   final doc = pw.Document()
     ..addPage(
@@ -35,7 +39,7 @@ Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
           children: [
             pw.Text(
               'NEXUSflow Mercado',
-              style: const pw.TextStyle(
+              style: pw.TextStyle(
                 fontSize: 20,
                 fontWeight: pw.FontWeight.bold,
               ),
@@ -50,7 +54,7 @@ Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
               children: [
                 pw.Text(
                   'Nº ${sale.invoiceNumber ?? '-'}',
-                  style: const pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
                 pw.Text(_dateTime(sale.createdAt)),
               ],
@@ -75,7 +79,7 @@ Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
                     _currency(item.subtotal),
                   ],
               ],
-              headerStyle: const pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
               cellAlignments: {
                 1: pw.Alignment.centerRight,
                 2: pw.Alignment.centerRight,
@@ -90,7 +94,7 @@ Future<Uint8List> buildInvoicePdf(Sale sale, {String? cashierName}) async {
                 children: [
                   pw.Text(
                     'Total: ${_currency(sale.total)}',
-                    style: const pw.TextStyle(
+                    style: pw.TextStyle(
                       fontSize: 14,
                       fontWeight: pw.FontWeight.bold,
                     ),

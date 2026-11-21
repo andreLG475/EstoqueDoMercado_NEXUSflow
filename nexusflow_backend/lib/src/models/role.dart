@@ -29,6 +29,9 @@ enum Role {
   };
 }
 
+/// REQUISITO 1: Validação de cadastro público
+/// Esta função é mantida para defesa em profundidade, mas a rota /api/auth/register
+/// agora força role = atendente diretamente, tornando esta validação redundante.
 Role validatePublicRegistrationRole(Role role) {
   if (role == Role.atendente) {
     return role;
@@ -38,6 +41,13 @@ Role validatePublicRegistrationRole(Role role) {
     'Cadastro público só permite o papel atendente. Para perfis administrativos, use o procedimento autorizado pela gestão.',
   );
 }
+
+// ============================================================
+// REQUISITO 2: Funções auxiliares para validação de estoque
+// NOTA: A validação real de estoque ocorre na stored procedure create_sale()
+// em SQL. Estas funções Dart são mantidas para testes unitários e possível
+// uso futuro em validações do lado do cliente.
+// ============================================================
 
 Map<String, int> summarizeRequestedQuantities(
   List<Map<String, dynamic>> items,

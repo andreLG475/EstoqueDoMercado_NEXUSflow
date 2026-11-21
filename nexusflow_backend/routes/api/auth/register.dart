@@ -14,7 +14,6 @@ Future<Response> onRequest(RequestContext context) async {
   final name = body?['name'] as String?;
   final email = body?['email'] as String?;
   final password = body?['password'] as String?;
-  final requestedRole = body?['role'] as String?;
 
   if (name == null || name.isEmpty) {
     return Response.json(
@@ -32,21 +31,10 @@ Future<Response> onRequest(RequestContext context) async {
     );
   }
 
-  Role role;
-  try {
-    role = requestedRole != null
-        ? Role.fromString(requestedRole)
-        : Role.atendente;
-    role = validatePublicRegistrationRole(role);
-  } catch (_) {
-    return Response.json(
-      statusCode: 400,
-      body: {
-        'error':
-            'Cadastro público só permite o papel atendente. Para perfis administrativos, use a criação autorizada pela gestão.',
-      },
-    );
-  }
+  // REQUISITO 1: Cadastro público só permite atendente
+  // Perfis administrativos (gerente_geral, gerente_estoque) só podem ser
+  // criados por um gerente_geral autenticado através da rota POST /api/usuarios
+  final role = Role.atendente;
 
   final existing = await db.execute(
     Sql.named('SELECT id FROM profiles WHERE email = @email'),

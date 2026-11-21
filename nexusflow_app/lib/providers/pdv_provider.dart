@@ -124,7 +124,7 @@ class CheckoutController {
 
   Future<Uint8List> downloadInvoicePdf(String saleId) {
     final api = _ref.read(apiClientProvider);
-    return api.getBytes('/api/vendas/$saleId/nota-fiscal');
+    return api.getBytes('/api/vendas/$saleId/comprovante');
   }
 }
 

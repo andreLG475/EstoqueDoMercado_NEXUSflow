@@ -136,6 +136,16 @@ BEGIN
     RAISE EXCEPTION 'Forma de pagamento inválida';
   END IF;
 
+  -- ============================================================
+  -- REQUISITO 2: Consistência de estoque
+  -- 1. Agrupa os itens da venda pelo product_id para somar quantidades duplicadas
+  -- 2. Valida o total solicitado contra o estoque disponível antes de confirmar
+  -- 3. Usa FOR UPDATE para lock pessimista, prevenindo race conditions
+  --    (outra transação não pode modificar o estoque até esta finalizar)
+  -- ============================================================
+  
+  -- Calcula o total com preços do banco e valida estoque somando as
+  -- quantidades por produto antes de confirmar a venda.
   FOR v_item_summary IN
     WITH item_totals AS (
       SELECT
